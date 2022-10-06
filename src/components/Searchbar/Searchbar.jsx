@@ -1,11 +1,12 @@
 import { Component } from "react";
 import { ImSearch } from "react-icons/im";
+import {toast } from "react-toastify";
 import {SearchbarHeader, SearchbarForm, SearchbarButton,SearchbarButtonLabel, SearchbarInput  } from "components/Searchbar/Searchbar.styled";
 
 export class Searchbar extends Component{
 
     state = {
-        name:'',
+        query:'',
     }
 
     hendleChange = (e) => {
@@ -14,7 +15,12 @@ export class Searchbar extends Component{
     }
 
     handleSubmit = e => {
-        console.log(e.target)
+        e.preventDefault();
+        if (this.state.query.trim() === '') {
+           return toast.warning('Введите что нибудь');
+        }
+        this.props.onSubmit(this.state.query);
+        this.setState({ query: '' });
     }
 
     render() {
@@ -27,7 +33,7 @@ export class Searchbar extends Component{
                     </SearchbarButton>
 
                     <SearchbarInput
-                        name="name"
+                        name="query"
                         type="text"
                         autoComplete="off"
                         autoFocus
