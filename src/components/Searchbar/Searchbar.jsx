@@ -6,7 +6,7 @@ import {SearchbarHeader, SearchbarForm, SearchbarButton,SearchbarButtonLabel, Se
 export class Searchbar extends Component{
 
     state = {
-        query:'',
+        query: '',
     }
 
     hendleChange = (e) => {
@@ -20,7 +20,11 @@ export class Searchbar extends Component{
            return toast.warning('Введите что нибудь');
         }
         this.props.onSubmit(this.state.query);
-        this.setState({ query: '' });
+        this.reset();
+    }
+
+    reset = () => {
+        this.setState({ query: '', });
     }
 
     render() {
@@ -39,6 +43,7 @@ export class Searchbar extends Component{
                         autoFocus
                         placeholder="Search images and photos"
                         onChange={this.hendleChange}
+                        value={this.state.query}
                     />
                 </SearchbarForm>
             </SearchbarHeader>
