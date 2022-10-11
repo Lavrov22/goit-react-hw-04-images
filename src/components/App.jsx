@@ -3,10 +3,13 @@ import { fetchImagesApi } from "api/Api";
 import { Searchbar } from "components/Searchbar/Searchbar";
 import { ImageGallery } from "components/ImageGallery/ImageGallery";
 import { Button } from "components/Button/Button";
+import { Loader } from "components/Loader/Loader";
+import { Modal } from "components/Modal/Modal";
 import { ToastContainer } from "react-toastify";
+import { Idle, Rejected, Empty } from "components/App.styled";
 import 'react-toastify/dist/ReactToastify.css';
-import { Idle, Pending, Rejected, Empty } from "components/ImageGallery/ImageGallery.styled";
-import { ImSpinner3 } from "react-icons/im";
+
+
 
 export class App extends Component {
 
@@ -16,60 +19,86 @@ export class App extends Component {
     items: [],
     status: 'idle',
     error: null,
+    showModal: false,
+    modalImg: null,
   }
 
-  componentDidUpdate(_, prevState) {
-    if (prevState.newQuery !== this.state.newQuery || prevState.page !== this.state.page) {
-      console.log("fetch data")
-      this.fetchImages();
+  async componentDidUpdate(_, prevState) {
+      if (prevState.newQuery !== this.state.newQuery || prevState.page !== this.state.page) {
+       this.fetchImages();
+       
     };
   };
+
 
   handleSearchbar = (query) => {
     this.setState({ newQuery: query, page: 1, items: []});
   };
 
   loadMore = () => {
-    console.log(this.state.items)
     this.setState(prevState => ({
       page: prevState.page + 1,
-    }))
-  }
+    }));
+  };
 
-  fetchImages = () => {
+  setImageUrl = (image) => {
+    this.setState({
+      modalImg: image,
+    })
+  }
+      
+
+  fetchImages = async () => {
+    const { newQuery, page } = this.state;
     try {
       this.setState({ status: 'pending' });
-      fetchImagesApi(this.state.newQuery, this.state.page).then(res => {
+      fetchImagesApi(newQuery, page).then(res => {
         if (res.ok) {
           return res.json();
         }
         return Promise.reject(
-          new Error(`Ничего не найдено по запросу ${this.state.newQuery}`)
+          new Error(`Ничего не найдено по запросу ${newQuery}`)
         );
       }).then(serchQuery => {
         if (serchQuery.totalHits === 0) {
           return this.setState({ status: 'empty' });
         };
         return serchQuery;
-      }).then(items => this.setState({ items: [...this.state.items, ...items.hits], status: 'resolved' }))
+      })
+        .then(items => this.setState({ items: [...this.state.items, ...items.hits], status: 'resolved' }))
     }
     catch (error) {
       this.setState({ error, status: 'rejected' });
     }
   };
 
+  openModal = (image) => {
+    this.setState(({ showModal, modalImg }) => ({
+      modalImg: image,
+      showModal: true,
+    }));
+  };
+
+  closeModal = () => {
+     this.setState(({ showModal }) => ({
+      showModal: false,
+    }));
+  }
+
   render() {
+    const { items, error, newQuery, status, modalImg, showModal} = this.state;
     return (
       <div>
         <ToastContainer position="top-center"
           autoClose={2000} />
         <Searchbar onSubmit={this.handleSearchbar} />
-        {this.state.status === 'empty' && <Empty> Ничего не найдено по запросу {this.state.newQuery }!!!</Empty>}
-        {this.state.status === 'idle' && <Idle> Введи в строку поиска!!!</Idle>}
-        {this.state.status === 'pending' && <Pending>Загружаем<ImSpinner3 /></Pending>}
-        {this.state.status === 'rejected' && <Rejected>{this.state.error.message}</Rejected>}
-        {this.state.status === 'resolved' && <ImageGallery items={this.state.items} />}
-        {this.state.status === 'resolved' && <Button loadMore={this.loadMore} />}
+        {this.state.status === 'empty' && <Empty> Ничего не найдено по запросу {newQuery }!!!</Empty>}
+        {status === 'idle' && <Idle> Введи в строку поиска!!!</Idle>}
+        {status === 'pending' && <Loader/> }
+        {status === 'rejected' && <Rejected>{error.message}</Rejected>}
+        {status === 'resolved' && <ImageGallery items={items} onOpenModal={this.openModal} />}
+        {status === 'resolved' && <Button loadMore={this.loadMore} items={items} />}
+        {showModal && <Modal onClose={this.closeModal} modalImg={modalImg} />}
       </div>
   );
   };

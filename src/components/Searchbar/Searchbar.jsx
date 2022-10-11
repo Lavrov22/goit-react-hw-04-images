@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import { Component } from "react";
 import { ImSearch } from "react-icons/im";
 import {toast } from "react-toastify";
@@ -15,11 +16,12 @@ export class Searchbar extends Component{
     }
 
     handleSubmit = e => {
+        const { query } = this.state;
         e.preventDefault();
-        if (this.state.query.trim() === '') {
+        if (query.trim() === '') {
            return toast.warning('Введите что нибудь');
         }
-        this.props.onSubmit(this.state.query);
+        this.props.onSubmit(query);
         this.reset();
     }
 
@@ -28,6 +30,7 @@ export class Searchbar extends Component{
     }
 
     render() {
+        const { query } = this.state;
         return (
             <SearchbarHeader>
                 <SearchbarForm onSubmit={this.handleSubmit}>
@@ -43,10 +46,14 @@ export class Searchbar extends Component{
                         autoFocus
                         placeholder="Search images and photos"
                         onChange={this.hendleChange}
-                        value={this.state.query}
+                        value={query}
                     />
                 </SearchbarForm>
             </SearchbarHeader>
         );
-    }
+    };
+};
+
+Searchbar.propTypes = {
+    onSubmit: PropTypes.func.isRequired,
 }
