@@ -22,12 +22,12 @@ export class Searchbar extends Component{
            return toast.warning('Введите что нибудь');
         }
         this.props.onSubmit(query);
-        this.reset();
+        // this.reset();
     }
 
-    reset = () => {
-        this.setState({ query: '', });
-    }
+    // reset = () => {
+    //     this.setState({ query: '', });
+    // }
 
     render() {
         const { query } = this.state;

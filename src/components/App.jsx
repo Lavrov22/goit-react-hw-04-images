@@ -32,7 +32,9 @@ export class App extends Component {
 
 
   handleSearchbar = (query) => {
-    this.setState({ newQuery: query, page: 1, items: []});
+    if (this.state.newQuery !== query) {
+      this.setState({ newQuery: query, page: 1, items: []});
+    };
   };
 
   loadMore = () => {
@@ -96,8 +98,8 @@ export class App extends Component {
         {status === 'idle' && <Idle> Введи в строку поиска!!!</Idle>}
         {status === 'pending' && <Loader/> }
         {status === 'rejected' && <Rejected>{error.message}</Rejected>}
-        {status === 'resolved' && <ImageGallery items={items} onOpenModal={this.openModal} />}
-        {status === 'resolved' && <Button loadMore={this.loadMore} items={items} />}
+        {items.length > 0 && <ImageGallery items={items} onOpenModal={this.openModal} />}
+        {status === 'resolved' && <Button loadMore={this.loadMore}/>}
         {showModal && <Modal onClose={this.closeModal} modalImg={modalImg} />}
       </div>
   );
