@@ -23,7 +23,7 @@ export class App extends Component {
     modalImg: null,
   }
 
-  async componentDidUpdate(_, prevState) {
+  componentDidUpdate(_, prevState) {
       if (prevState.newQuery !== this.state.newQuery || prevState.page !== this.state.page) {
        this.fetchImages();
        
@@ -50,7 +50,7 @@ export class App extends Component {
   }
       
 
-  fetchImages = async () => {
+  fetchImages = () => {
     const { newQuery, page } = this.state;
     try {
       this.setState({ status: 'pending' });
