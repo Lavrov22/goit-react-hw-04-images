@@ -19,11 +19,3 @@ export const Rejected = styled.h1`
   font-size: 20px;
   font-weight: bold;
 `
-export const Empty = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-top: 20px;
-  font-size: 20px;
-  font-weight: bold;
-`
