@@ -144,7 +144,6 @@ export const App = () => {
         })
           .then(items =>
         {
-          console.log(items.hits);
           setItems(prevState => [...prevState, ...items.hits]);
           setStatus('resolved');
         }).catch(error => {
